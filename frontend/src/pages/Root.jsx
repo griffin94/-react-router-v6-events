@@ -7,13 +7,8 @@ import {
   useSubmit,
 } from "react-router-dom";
 import { getAuthTokenExpiration } from "../utils/auth";
-
-const navigationContainer = {
-  listStyle: "none",
-  display: "flex",
-  gap: "1rem",
-  padding: "1rem",
-};
+import { Header, Nav } from "../components";
+import { ThemeProvider } from "styled-components";
 
 const mainContainer = {
   padding: "2rem",
@@ -25,15 +20,14 @@ const Root = () => {
 
   useEffect(() => {
     if (!token) return;
-    
+
     if (token === "EXPIRED") {
       submit(null, { action: "/logout", method: "post" });
       return;
     }
 
     const duration = getAuthTokenExpiration();
-    console.log(duration);
-    
+
     setTimeout(() => {
       submit(null, { action: "/logout", method: "post" });
     }, duration);
@@ -41,33 +35,43 @@ const Root = () => {
 
   return (
     <div>
-      <header>
-        <nav>
-          <ul style={navigationContainer}>
-            <li>
+      <ThemeProvider
+        theme={{
+          breakpoints: {
+            xs: 0,
+            sm: "576px",
+            md: "768px",
+            lg: "992px",
+            xl: "1200px",
+            xxl: "1400px",
+          },
+        }}
+      >
+        <Header>
+          <Nav>
+            <Nav.Item>
               <NavLink to="/">Home</NavLink>
-            </li>
-            <li>
+            </Nav.Item>
+            <Nav.Item>
               <NavLink to="/events">Events</NavLink>
-            </li>
-
+            </Nav.Item>
             {token ? (
-              <li>
+              <Nav.Item>
                 <Form action="/logout" method="post">
                   <button type="submit">Logout</button>
                 </Form>
-              </li>
+              </Nav.Item>
             ) : (
-              <li>
+              <Nav.Item>
                 <NavLink to="/login">Log In</NavLink>
-              </li>
+              </Nav.Item>
             )}
-          </ul>
-        </nav>
-      </header>
-      <main style={mainContainer}>
-        <Outlet />
-      </main>
+          </Nav>
+        </Header>
+        <main style={mainContainer}>
+          <Outlet />
+        </main>
+      </ThemeProvider>
     </div>
   );
 };
